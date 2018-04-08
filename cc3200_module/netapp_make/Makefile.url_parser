@@ -1,0 +1,9 @@
+URL_PARSER_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/url_parser
+
+URL_PARSER_SRCS = url_parser.c
+
+IPATH += $(URL_PARSER_ROOT)
+VPATH += $(URL_PARSER_ROOT)
+
+NETAPP_SRC += $(URL_PARSER_SRCS)
+

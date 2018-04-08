@@ -1,0 +1,24 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+# note: do not use network_if.c and httpserver when use this app
+#
+
+MINI_HTTPSERVER = $(PROJECTROOT)/apps/register/register_httpserver
+
+SERVER_REGISTER = $(PROJECTROOT)/apps/register/register
+
+MINI_HTTPSERVER_SRC = base64.c  HttpAuth.c  HttpCore.c  HttpDebug.c  HttpDynamic.c  HttpSocket.c  HttpStatic.c  HttpString.c  sha1.c \
+				webserver.c  WebSockHandler.c  userconfig.c system.c \
+				httpserverapp.c  sflash.c  system.c  userconfig.c  webserver.c network_handler.c hl_apconfig.c button.c xmlcreate.c
+
+NETAPP_SRC += $(MINI_HTTPSERVER_SRC)
+
+VPATH += $(MINI_HTTPSERVER) $(SERVER_REGISTER)
+IPATH += $(MINI_HTTPSERVER) $(SERVER_REGISTER)
+
+
+# USERLIB = ./lib
+# SDK_LIBDIR += $(USERLIB)/library.a
+# IPATH += $(USERLIB)

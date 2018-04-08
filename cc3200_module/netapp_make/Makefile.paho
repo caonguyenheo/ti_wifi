@@ -1,0 +1,36 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+# Makefile for Paho MQTT embedded client in C
+#
+
+PAHO_MQTT_C_ROOT ?= $(PROJECTROOT)/apps/org.eclipse.paho.mqtt.embedded-c
+
+PAHO_MQTT_C_SOURCES = MQTTFormat.c \
+					MQTTPacket.c \
+					MQTTDeserializePublish.c \
+					MQTTConnectClient.c \
+					MQTTSubscribeClient.c \
+					MQTTSerializePublish.c \
+					MQTTConnectServer.c \
+					MQTTSubscribeServer.c \
+					MQTTUnsubscribeServer.c \
+					MQTTUnsubscribeClient.c \
+					MQTTClient.c
+#					MQTTCC3200.c
+
+PAHO_CC3200_LAYER_ROOT ?= $(PROJECTROOT)/apps/paho.mqtt.cc3200.layer
+
+PAHO_CC3200_SOURCES = MQTTCC3200.c
+
+NETAPP_SRC += $(PAHO_MQTT_C_SOURCES) $(PAHO_CC3200_SOURCES)
+
+PAHO_MQTT_PATH = $(PAHO_MQTT_C_ROOT)/MQTTClient-C/src \
+				$(PAHO_MQTT_C_ROOT)/MQTTPacket/src
+				# $(PAHO_MQTT_C_ROOT)/MQTTClient-C/src/cc3200 \
+
+PAHO_CC3200_PATH = $(PAHO_CC3200_LAYER_ROOT)
+
+VPATH += $(PAHO_MQTT_PATH) $(PAHO_CC3200_PATH)
+IPATH += $(PAHO_MQTT_PATH) $(PAHO_CC3200_PATH)

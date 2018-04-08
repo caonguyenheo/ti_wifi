@@ -1,0 +1,28 @@
+
+MIDDLEWARE_ROOT = $(CC3200_SDK)/middleware
+
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/driver
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/driver/hal
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/framework
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/framework/timer
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/framework/pm
+MIDDLEWARE_INCLUDE += $(MIDDLEWARE_ROOT)/soc
+
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/driver
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/driver/hal
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/framework
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/framework/timer
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/framework/pm
+MIDDLEWARE_DIR += $(MIDDLEWARE_ROOT)/soc
+
+MIDDLEWARE_SRC := ${foreach sdir, $(MIDDLEWARE_DIR), ${subst ${sdir}/,,${wildcard $(sdir)/*.c}}}
+# MIDDLEWARE_SRC += cc_pm.c cc_timer.c cc_io_park.c cc_pm_ops.c \
+# 				dma_hal.c gpio_hal.c hw_timer32.c interrupt_hal.c rtc_hal.c spi_hal.c uart_hal.c util64.c \
+# 				spi_drv.c uart_drv.c
+
+# adding header file
+IPATH += $(MIDDLEWARE_INCLUDE)
+VPATH += $(MIDDLEWARE_DIR)
+
+# adding source
+NETAPP_SRC += $(MIDDLEWARE_SRC)

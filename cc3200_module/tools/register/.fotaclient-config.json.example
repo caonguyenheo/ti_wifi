@@ -1,0 +1,18 @@
+{
+  "CDN": {
+    "TYPE": "cdntype, DROPBOX is default"
+  },
+  "DEMO": {
+    "HOST": "demo host",
+    "PROTOCOL": "http",
+    "APIKEY": "mykey"
+  },
+  "LOCAL": {
+    "HOST": "myip",
+    "PROTOCOL": "http",
+    "APIKEY": "mykey"
+  },
+  "DROPBOX": {
+    "KEY": "dropbox key",
+  }
+}

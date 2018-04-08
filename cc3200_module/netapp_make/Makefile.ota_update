@@ -1,0 +1,16 @@
+OTA_UPDATE_ROOT ?= $(PROJECTROOT)/apps/ota_update
+
+OTA_UPDATE_SOURCES = CdnClient.c \
+				flash.c \
+				flc.c \
+				OtaApp.c \
+				OtaClient.c \
+				OtaFlash.c \
+				OtaHttpClient.c \
+				OtaUtil.c \
+				user_ota.c
+
+IPATH += $(OTA_UPDATE_ROOT)
+VPATH += $(OTA_UPDATE_ROOT)
+
+NETAPP_SRC += $(OTA_UPDATE_SOURCES)

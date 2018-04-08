@@ -1,0 +1,18 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+IPATH+=$(CC3200_SDK)/oslib
+IPATH+=$(CC3200_SDK)/third_party/FreeRTOS
+IPATH+=$(CC3200_SDK)/third_party/FreeRTOS/source
+IPATH+=$(CC3200_SDK)/third_party/FreeRTOS/source/portable/GCC/ARM_CM4
+IPATH+=$(CC3200_SDK)/third_party/FreeRTOS/source/include
+
+#
+# Additional Compiler Flags
+#
+CFLAGS+=-DUSE_FREERTOS
+CFLAGS+=-DSL_PLATFORM_MULTI_THREADED
+
+SDK_LIBDIR += ${CC3200_SDK}/oslib/gcc/exe/FreeRTOS.a

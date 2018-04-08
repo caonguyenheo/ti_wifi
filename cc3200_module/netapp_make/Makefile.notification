@@ -1,0 +1,15 @@
+#
+# Duy Khanh Nguyen <khanh.nguyen@nxcomm.com>
+# Sep 2016
+#
+
+include $(PROJECTROOT)/netapp_make/Makefile.serverapi
+
+NOTIFICATION_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/notification
+
+NOTIFICATION_SRC = notification.c
+
+VPATH += $(NOTIFICATION_ROOT)
+IPATH += $(NOTIFICATION_ROOT)
+
+NETAPP_SRC += $(NOTIFICATION_SRC)

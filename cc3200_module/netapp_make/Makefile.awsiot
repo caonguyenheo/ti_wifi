@@ -1,0 +1,52 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+AWSIOT_ROOT ?= $(PROJECTROOT)/apps/aws-iot-device-sdk-embedded-C
+
+AWSIOT_SOURCES = MQTTFormat.c \
+		  MQTTPacket.c \
+		  MQTTDeserializePublish.c \
+		  MQTTConnectClient.c \
+		  MQTTSubscribeClient.c \
+		  MQTTSerializePublish.c \
+		  MQTTConnectServer.c \
+		  MQTTSubscribeServer.c \
+		  MQTTUnsubscribeServer.c \
+		  MQTTUnsubscribeClient.c \
+		  MQTTClient.c \
+		  aws_iot_mqtt_embedded_client_wrapper.c \
+		  aws_iot_json_utils.c \
+		  aws_iot_shadow_actions.c \
+		  aws_iot_shadow.c \
+		  aws_iot_shadow_json.c \
+		  aws_iot_shadow_records.c \
+		  cc3200_freertos_platform.c
+		  # network_sl.c timer.c
+
+NETAPP_SRC += $(AWSIOT_SOURCES)
+
+#
+# it is important to add platform_freertos first, since it will overwrite some file in AWSIOT_ROOT
+#
+VPATH += $(PROJECTROOT)/apps/aws_iot_platform_freertos
+# VPATH += $(AWSIOT_ROOT)/aws_iot_src/protocol/mqtt/aws_iot_embedded_client_wrapper/platform_tirtos
+VPATH += $(AWSIOT_ROOT)/aws_iot_src/protocol/mqtt/aws_iot_embedded_client_wrapper \
+		$(AWSIOT_ROOT)/aws_iot_src/shadow \
+		$(AWSIOT_ROOT)/aws_iot_src/utils \
+		$(AWSIOT_ROOT)/aws_mqtt_embedded_client_lib/MQTTClient-C/src \
+		$(AWSIOT_ROOT)/aws_mqtt_embedded_client_lib/MQTTPacket/src
+
+#
+# it is important to add platform_freertos first, since it will overwrite some file in AWSIOT_ROOT
+#
+IPATH += $(PROJECTROOT)/apps/aws_iot_platform_freertos
+# IPATH + $(AWSIOT_ROOT)/aws_iot_src/protocol/mqtt/aws_iot_embedded_client_wrapper/platform_tirtos
+IPATH += ./ \
+		$(AWSIOT_ROOT)/aws_iot_src/protocol/mqtt \
+		$(AWSIOT_ROOT)/aws_iot_src/utils \
+		$(AWSIOT_ROOT)/aws_iot_src/shadow \
+		$(AWSIOT_ROOT)/aws_iot_src/protocol/mqtt/aws_iot_embedded_client_wrapper \
+		$(AWSIOT_ROOT)/aws_mqtt_embedded_client_lib/MQTTClient-C/src \
+		$(AWSIOT_ROOT)/aws_mqtt_embedded_client_lib/MQTTPacket/src

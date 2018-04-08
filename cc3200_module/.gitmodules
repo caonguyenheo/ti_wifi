@@ -1,0 +1,13 @@
+[submodule "apps/jsmn"]
+	path = apps/jsmn
+	url = https://github.com/zserge/jsmn.git
+[submodule "tools/unity"]
+	path = tools/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "apps/aws-iot-device-sdk-embedded-C"]
+	path = apps/aws-iot-device-sdk-embedded-C
+	url = https://github.com/aws/aws-iot-device-sdk-embedded-C.git
+[submodule "cc3200-sdk"]
+	path = cc3200-sdk
+	url = http://hoang.phuc@git.cinatic.com:7990/scm/cam/fw-iot-cc3200-sdk-original.git
+	branch = master

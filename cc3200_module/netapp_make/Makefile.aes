@@ -1,0 +1,8 @@
+AES_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/aes
+
+AES_SOURCES = cc3200_aes.c
+
+IPATH += $(AES_ROOT)
+VPATH += $(AES_ROOT)
+
+NETAPP_SRC += $(AES_SOURCES)

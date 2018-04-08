@@ -1,0 +1,9 @@
+include $(PROJECTROOT)/netapp_make/Makefile.jsmn
+
+WIMA_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/wima
+
+WIMA_SOURCES = whatismyaddress.c
+IPATH += $(WIMA_ROOT)
+VPATH += $(WIMA_ROOT)
+
+NETAPP_SRC += $(WIMA_SOURCES)

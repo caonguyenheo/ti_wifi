@@ -1,0 +1,13 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+JSMN_ROOT ?= $(PROJECTROOT)/apps/jsmn
+
+JSMN_SOURCES = jsmn.c
+
+IPATH += $(JSMN_ROOT)
+VPATH += $(JSMN_ROOT)
+
+NETAPP_SRC += $(JSMN_SOURCES)

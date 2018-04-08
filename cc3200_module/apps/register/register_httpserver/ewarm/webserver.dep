@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>928590608</fileChecksum>
+  <configuration>
+    <name>Release</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\HttpAuth.c</file>
+      <file>$PROJ_DIR$\..\base64.c</file>
+      <file>$PROJ_DIR$\..\HttpCore.c</file>
+      <file>$PROJ_DIR$\..\HttpDebug.c</file>
+      <file>$PROJ_DIR$\..\HttpDynamic.c</file>
+      <file>$PROJ_DIR$\..\HttpSocket.c</file>
+      <file>$PROJ_DIR$\..\HttpStatic.c</file>
+      <file>$PROJ_DIR$\..\HttpString.c</file>
+      <file>$PROJ_DIR$\..\sha1.c</file>
+      <file>$PROJ_DIR$\..\strlib.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\example\common\webserver.c</file>
+      <file>$PROJ_DIR$\..\WebSockHandler.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpDynamic.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\inc\hw_common_reg.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$PROJ_DIR$\..\strlib.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpAuth.o</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpAuth.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpDebug.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\pin.h</file>
+      <file>$PROJ_DIR$\Release\List\base64.i</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\Release\Obj\sha1.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\inc\hw_shamd5.h</file>
+      <file>$PROJ_DIR$\Release\Exe\webserver.a</file>
+      <file>$PROJ_DIR$\Release\List\HttpDynamic.i</file>
+      <file>$PROJ_DIR$\..\HttpDebug.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\rom_map.h</file>
+      <file>$PROJ_DIR$\Release\Obj\sha1.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$PROJ_DIR$\Release\List\WebSockHandler.i</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\netcfg.h</file>
+      <file>$PROJ_DIR$\..\HttpSocket.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\trace.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\socket.h</file>
+      <file>$PROJ_DIR$\Release\Obj\strlib.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\utils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\inc\hw_types.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpAuth.i</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpSocket.pbi</file>
+      <file>$PROJ_DIR$\..\HTTPString.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpDebug.i</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpCore.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\webserver.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\source\objInclusion.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpString.pbi</file>
+      <file>$PROJ_DIR$\..\HttpCore.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpDynamic.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\source\spawn.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$PROJ_DIR$\..\HttpResponse.h</file>
+      <file>$PROJ_DIR$\Release\Obj\base64.o</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpSocket.o</file>
+      <file>$PROJ_DIR$\..\HttpConfig.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\rom.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$PROJ_DIR$\Release\Obj\WebSockHandler.o</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\simplelink.h</file>
+      <file>$PROJ_DIR$\Release\Obj\WebSockHandler.pbi</file>
+      <file>$PROJ_DIR$\..\HttpAuth.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpCore.i</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+      <file>$PROJ_DIR$\..\webserver.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\rom_patch.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpSocket.i</file>
+      <file>$PROJ_DIR$\Release\Obj\strlib.o</file>
+      <file>$PROJ_DIR$\..\HttpHeaders.h</file>
+      <file>$PROJ_DIR$\Release\Obj\webserver.o</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpString.i</file>
+      <file>$PROJ_DIR$\Release\Obj\base64.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\wlan_rx_filters.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpCore.o</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpStatic.o</file>
+      <file>$PROJ_DIR$\Release\List\strlib.i</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpDebug.pbi</file>
+      <file>$PROJ_DIR$\..\WebSockHandler.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\shamd5.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\interrupt.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\user.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\inc\hw_ints.h</file>
+      <file>$PROJ_DIR$\Release\List\webserver.i</file>
+      <file>$PROJ_DIR$\..\HttpStatic.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\wlan.h</file>
+      <file>$PROJ_DIR$\..\sha1.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\fs.h</file>
+      <file>$PROJ_DIR$\Release\List\sha1.i</file>
+      <file>$PROJ_DIR$\..\datatypes.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpStatic.pbi</file>
+      <file>$PROJ_DIR$\..\HttpRequest.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\device.h</file>
+      <file>$PROJ_DIR$\Release\Obj\HttpString.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\driverlib\prcm.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\include\netapp.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\simplelink\cc_pal.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\inc\hw_memmap.h</file>
+      <file>$PROJ_DIR$\..\HttpDynamic.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\oslib\osi.h</file>
+      <file>$PROJ_DIR$\Release\List\HttpStatic.i</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\..\HttpAuth.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 40 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 63 55 42 94 96</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 63 55 42 96 94</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\base64.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 22 53</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 74</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpCore.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 64 76</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 44</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 70 94 48 34 52 42 96 63 55 28 104 89 56 60 85 12 86 102 72 23 31 51 91 105 80 13 83 61 84 101 46 35 92 36 100 90 97 33 75 50 57 29 67 38 66</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 94 63 83 31 66 85 91 57 60 12 86 33 84 48 96 28 89 42 80 38 55 51 23 36 70 34 52 104 56 105 13 61 29 72 102 35 90 50 101 46 92 100 97 75 67</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpDebug.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 43 20</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 79</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 28 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28 55</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpDynamic.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 27 49</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 104 55 96 42 94 52 48 56 60 85 12 86 102 72 23 31 51</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 85 60 56 86 52 31 12 23 96 48 55 42 51 102 104 94 72</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpSocket.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 68 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 41</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 56 60 85 12 86 102 72 23 31 51 28 55 34 48 94 61 84 101 105 46 35 92 36 100 90 97 33 75 50</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 105 86 100 31 85 60 94 12 23 46 75 56 34 51 102 92 97 61 28 72 55 48 35 36 90 33 84 50 101</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpStatic.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 106 77</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 95</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 89 55 96 42 94 13 60 85 12 86 102 72 23 31 52 48 92 61 84 56 51 101 105 46 35 36 100 90 97 33 75 50</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 42 60 31 72 52 97 61 92 94 13 96 48 55 85 12 23 86 102 46 100 75 56 105 51 89 35 36 90 33 84 50 101</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HttpString.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 73 98</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 47</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 56 60 85 12 86 102 72 23 31 51 13 42 94</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 85 72 60 42 13 31 51 56 12 23 86 102 94</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\sha1.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 93 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 58 60 85 12 86 102 72 23 31 65 13 16 83 56 51 25 103 39 87 15 57 29 67 81 82 99 21 38</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 60 38 12 31 87 23 56 81 86 85 16 103 57 99 102 13 83 25 39 15 29 82 21 65 72 51 58 67</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\strlib.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 78 69</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 37</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 13 60 85 12 86 102 72 23 31 58 65 56 51 17</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 60 65 85 56 72 51 58 17 31 13 12 23 86 102</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\example\common\webserver.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 88 71</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52 94 42 96 28 55 56 60 85 12 86 102 72 23 31 51 13 83 66</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 72 13 94 60 28 66 42 96 56 83 85 52 55 31 51 12 23 86 102</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\WebSockHandler.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 32 59</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 62</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 48 94 52 42 96 63 55 28 56 60 85 12 86 102 72 23 31 51 13 105 80 61 84 101 46 35 92 36 100 90 97 33 75 50 57 29 67 38</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 61 33 55 56 63 42 60 72 36 105 52 29 96 85 35 90 48 28 13 80 57 38 94 31 51 12 23 86 102 46 92 100 97 75 84 50 101 67</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>IARCHIVE</name>
+          <file> 26</file>
+        </tool>
+      </outputs>
+    </file>
+    <forcedrebuild>
+      <name>$PROJ_DIR$\..\..\..\..\example\common\webserver.c</name>
+      <tool>ICCARM</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+

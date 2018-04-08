@@ -1,0 +1,8 @@
+DATE_TIME_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/date_time
+
+DATE_TIME_SOURCES = date_time.c
+
+IPATH += $(DATE_TIME_ROOT)
+VPATH += $(DATE_TIME_ROOT)
+
+NETAPP_SRC += $(DATE_TIME_SOURCES)

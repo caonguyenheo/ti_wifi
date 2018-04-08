@@ -1,0 +1,16 @@
+SLEEP_PROFILE_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/deep_sleep
+
+SLEEP_PROFILE_SRC += sleep_profile.c
+SLEEP_PROFILE_SRC += lp3p0_board.c
+SLEEP_PROFILE_SRC += lp3p0_plat_ops.c
+SLEEP_PROFILE_SRC += main_deep_sleep.c
+
+COMMON_SRC += utils_if.c wdt_if.c
+
+USE_MIDDLEWARE = 1
+IPATH += $(SLEEP_PROFILE_ROOT)
+VPATH += $(SLEEP_PROFILE_ROOT)
+
+CFLAGS += -DDEEP_SLEEP_MODE
+
+NETAPP_SRC += $(SLEEP_PROFILE_SRC)

@@ -1,0 +1,25 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+HTTPCli_ROOT = $(CC3200_SDK)/netapps/http/client
+
+#
+# Objects
+#
+HTTPCli_SOURCES = httpcli.c httpstr.c ssock.c
+#
+# Additional Compiler Flags
+#
+CFLAGS += -Dgcc -Dcc3200 -DTARGET_IS_CC3200 -D__SL__
+CFLAGS += -D__OSI__
+CFLAGS += -DHTTPCli_LIBTYPE_FULL
+CFLAGS += -DSL_PLATFORM_MULTI_THREADED
+CFLAGS += -DUSE_FREERTOS
+
+IPATH += $(CC3200_SDK)/netapps
+
+VPATH += $(HTTPCli_ROOT)
+
+NETAPP_SRC += $(HTTPCli_SOURCES)

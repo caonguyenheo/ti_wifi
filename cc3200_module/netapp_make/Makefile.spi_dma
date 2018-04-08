@@ -1,0 +1,9 @@
+SPI_DMA_ROOT ?= $(PROJECTROOT)/apps/spi_dma/transfer_64k
+
+SPI_SRCS = spi_common.c \
+		   master.c
+
+IPATH += $(SPI_DMA_ROOT)/src
+VPATH += $(SPI_DMA_ROOT)/src
+
+NETAPP_SRC += $(SPI_SRCS)

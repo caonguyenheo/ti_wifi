@@ -1,0 +1,5 @@
+This folder contains makefiles to use netapps, simplelike, and middleware.
+
+- makefile.*.compile: will be used to compile netapps, result in lib *.a
+- makefile.*: will be included to use lib *.a
+

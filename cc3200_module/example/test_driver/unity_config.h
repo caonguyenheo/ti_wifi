@@ -1,0 +1,6 @@
+#ifndef __UNITY_INCLUDE_CONFIG_H__
+#define __UNITY_INCLUDE_CONFIG_H__
+
+#define UNITY_OUTPUT_CHAR(x) PRINT(x)
+
+#endif /* __UNITY_INCLUDE_CONFIG_H__ */

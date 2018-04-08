@@ -1,0 +1,84 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Sept 2015
+#
+
+#
+# The base directory
+#
+ROOT=../../../..
+
+#
+# Lib Name
+#
+LIBRARY=${BINDIR}/libhttpclient.a
+
+#
+# Include the common make definitions.
+#
+include ${ROOT}/tools/gcc_scripts/makedefs
+
+#
+# Where to find header files that do not live in the source directory.
+#
+VPATH=..
+
+#
+# Where to find header files that do not live in the source directory.
+#
+IPATH = $(ROOT)/driverlib
+IPATH += $(ROOT)/inc
+IPATH += $(ROOT)/oslib
+IPATH += $(ROOT)/simplelink
+IPATH += $(ROOT)/simplelink/include
+IPATH += $(ROOT)/simplelink/source
+IPATH += $(ROOT)/netapps
+# IPATH += $(ROOT)/src/oslib
+
+#
+# Objects
+#
+SOURCES = httpcli.c httpstr.c ssock.c
+OBJECTS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))
+
+#
+# Additional Compiler Flags
+#
+CFLAGS += -Dgcc -Dcc3200 -DTARGET_IS_CC3200 -D__SL__
+CFLAGS += -DHTTPCli_LIBTYPE_MIN
+
+# CFLAGS+=-DHTTPCli_LIBTYPE_FULL
+# CFLAGS+=-DSL_PLATFORM_MULTI_THREADED
+# CFLAGS+=-DUSE_FREERTOS
+
+
+#
+# The default rule, which causes the driver library to be built.
+#
+all: ${OBJDIR} ${BINDIR} ${LIBRARY}
+
+$(LIBRARY): $(OBJECTS)
+
+#
+# The rule to clean out all the build products.
+#
+clean:
+	@rm -rf ${OBJDIR} ${wildcard *~}
+	@rm -rf ${BINDIR} ${wildcard *~}
+
+#
+# The rule to create the target directories.
+#
+${OBJDIR}:
+	@mkdir -p ${OBJDIR}
+
+${BINDIR}:
+	@mkdir -p ${BINDIR}
+
+#
+# Include the automatically generated dependency files.
+#
+ifneq (${MAKECMDGOALS},clean)
+-include ${wildcard ${OBJDIR}/*.d} __dummy__
+endif
+

@@ -1,0 +1,13 @@
+SRC_FILES +=\
+    $(ROOT_TREE)/lib/whatismyaddress.c \
+    $(ROOT_TREE)/lib/test/test_wima_parse.c \
+    $(ROOT_TREE)/lib/test/test_wima_serialize.c \
+    $(ROOT_TREE)/lib/test/test_wima_runner.c \
+    $(ROOT_TREE)/lib/test/test_wima_decode.c \
+    $(ROOT_TREE)/tools/jsmn/jsmn.c \
+
+
+INC_DIRS +=\
+    -I$(ROOT_TREE)/lib/test/ \
+    -I$(ROOT_TREE)/lib/ \
+    -I$(ROOT_TREE)/tools/jsmn/

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "async": "^1.2.1",
+    "dropbox": "^0.10.3",
+    "minimist": "^1.1.1",
+    "request": "^2.58.0"
+  }
+}

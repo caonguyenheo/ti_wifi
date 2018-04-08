@@ -1,0 +1,9 @@
+include $(PROJECTROOT)/netapp_make/Makefile.date_time
+NTP_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/ntp
+
+NTP_SOURCES = ntp.c
+
+IPATH += $(NTP_ROOT)
+VPATH += $(NTP_ROOT)
+
+NETAPP_SRC += $(NTP_SOURCES)

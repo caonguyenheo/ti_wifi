@@ -1,0 +1,9 @@
+CC3200_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/cc3200
+
+CC3200_SOURCES = cc3200_system.c \
+				nxcGenUDID_24.c	
+
+IPATH += $(CC3200_ROOT)
+VPATH += $(CC3200_ROOT)
+
+NETAPP_SRC += $(CC3200_SOURCES)

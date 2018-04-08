@@ -1,0 +1,67 @@
+ROOT_TREE = .
+
+#We try to detect the OS we are running on, and adjust commands as needed
+ifeq ($(OSTYPE),cygwin)
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+elseifeq ($(OSTYPE),msys)
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.exe
+elseifeq ($(OS),Windows_NT)
+	CLEANUP = del /F /Q
+	MKDIR = mkdir
+	TARGET_EXTENSION=.exe
+else
+	CLEANUP = rm -f
+	MKDIR = mkdir -p
+	TARGET_EXTENSION=.out
+endif
+
+UNITY_ROOT=$(ROOT_TREE)/tools/unity
+C_COMPILER=gcc
+
+
+TARGET_BASE?=all_tests
+TARGET_FILE = tests/$(TARGET_BASE)$(TARGET_EXTENSION)
+
+### include testing
+include $(ROOT_TREE)/apps/ota/test/Makefile.ota
+
+SRC_FILES +=\
+	$(ROOT_TREE)/tests/all_tests.c \
+	$(UNITY_ROOT)/src/unity.c \
+	$(UNITY_ROOT)/extras/fixture/src/unity_fixture.c \
+
+INC_DIRS += -Isrc -I$(UNITY_ROOT)/src -I$(UNITY_ROOT)/extras/fixture/src
+
+CFLAGS = -std=c99
+CFLAGS += -Wall
+CFLAGS += -Wextra
+CFLAGS += -Werror 
+CFLAGS += -Wpointer-arith
+CFLAGS += -Wcast-align
+CFLAGS += -Wwrite-strings
+# CFLAGS += -Wswitch-default
+CFLAGS += -Wunreachable-code
+CFLAGS += -Winit-self
+CFLAGS += -Wmissing-field-initializers
+CFLAGS += -Wno-unknown-pragmas
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wundef
+CFLAGS += -Wold-style-definition
+CFLAGS += -Wmissing-prototypes
+CFLAGS += -Wmissing-declarations
+CFLAGS += -DUNITY_FIXTURES
+
+SYMBOLS=
+
+all: default
+
+default:
+	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES) -o $(TARGET_FILE)
+	./$(TARGET_FILE) -v
+
+clean:
+	$(CLEANUP)

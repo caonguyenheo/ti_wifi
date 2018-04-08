@@ -1,0 +1,17 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Feb 2016
+#
+# files for cv2212 module
+#
+
+CC2212_MODULE_SRC += pinmux.c hl_gpio.c hl_uart.c ap_scan.c hl_apconfig.c system.c
+CC2212_MODULE_SRC += url_parser.c
+CC2212_MODULE_SRC += cvhttp.c
+
+CC2212_MODULE_DIR = $(PROJECTROOT)/modules_cv2212
+CC2212_MODULE_DIR += $(PROJECTROOT)/modules_cv2212/cvhttpd
+
+COMMON_SRC += $(CC2212_MODULE_SRC)
+COMMON_DIR += $(CC2212_MODULE_DIR)
+

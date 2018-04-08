@@ -1,0 +1,197 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Sept 2015
+#
+
+#
+# The base directory for SDK
+#
+CC3200_SDK=$(PROJECTROOT)/cc3200-sdk
+
+# OBJDIR ?= .obj
+# BINDIR ?= .exe
+
+#
+# Include the common make definitions.
+#
+include ${CC3200_SDK}/tools/gcc_scripts/makedefs
+
+#
+# Name for the project
+#
+PROJECT ?= "A-CC3200-App"
+CFLAGS += -DPROJECT='"$(PROJECT)"'
+
+DB = $(PREFIX)-gdb
+DB_CONF = $(CC3200_SDK)/tools/gcc_scripts
+# Get realpath for debugging
+AXFPATH := $(realpath $(BINDIR)/$(PROJECT).axf)
+
+
+SERIALDUMP = $(PROJECTROOT)/tools/serialdump-linux
+CC3200PORT ?= /dev/ttyUSB1
+CC3200PROG = cc3200prog
+CC3200PROG_DIR = $(PROJECTROOT)/tools/cc3200prog
+
+#
+# fota setting
+#
+FOTA_PROFILE ?= LOCAL
+FOTA_CONFIGFILE ?= ${HOME}/.fotaclient-config.json
+FOTA_CLIENT = /home/nqdinh/workspaces/temp/fota-client-js/fota-client.js
+
+####
+#### create .version file when it's not existed yet
+#### 0.0.1 is the default version to start
+#### todo: check version, should be like xxx.xxx.xxx, 0 <= x <= 255
+####
+ifeq ("$(wildcard ./.version)","")
+$(shell touch ./.version && echo "0.0.1" > ./.version)
+endif
+VERSION := $(shell cat ./.version)
+CFLAGS += -DVERSION='"$(VERSION)"'
+
+
+CFLAGS += -DTARGET_IS_CC3200
+
+#
+# Include FreeRTOS?
+# Make sure this is called very first
+#
+ifeq ($(USE_FREERTOS),1)
+include $(PROJECTROOT)/netapp_make/Makefile.freertos
+endif
+
+#
+# Handling netapps
+#
+NETAPP_ROOT = $(CC3200_SDK)/netapps
+ifdef NETAPPS
+	NETAPP_INCLUDES += ${foreach NETAPP, $(NETAPPS), ${wildcard $(PROJECTROOT)/netapp_make/Makefile.$(NETAPP)}}
+	-include $(NETAPP_INCLUDES)
+endif
+
+#
+# Including middleware
+#
+ifdef USE_MIDDLEWARE
+include $(PROJECTROOT)/netapp_make/Makefile.middleware
+endif
+
+#
+# Including simplelink
+#
+include $(PROJECTROOT)/netapp_make/Makefile.simplelink
+
+#
+# Including driverlib
+#
+include $(PROJECTROOT)/netapp_make/Makefile.driverlib
+
+#
+# Including simplelink_extlib
+#
+include $(PROJECTROOT)/netapp_make/Makefile.simplelink_extlib
+
+SDK_INC_DIR = $(CC3200_SDK)/inc
+
+#
+# Including cv2212 modules
+#
+ifeq ($(USE_CV2212_MODULE),1)
+include $(PROJECTROOT)/Makefile.cv2212
+endif
+
+# common example files
+# COMMON_SRC = button_if.c gpio_if.c i2c_if.c network_if.c startup_gcc.c timer_if.c uart_if.c udma_if.c utils_if.c wdt_if.c
+COMMON_SRC += gpio_if.c startup_gcc.c uart_if.c timer_if.c button_if.c
+COMMON_DIR += $(CC3200_SDK)/example/common
+
+#
+# DO NOT CHANGE THE FOLLOWING CODES
+#
+
+# where to find all source
+SRC_DIR += ./
+
+SRCFILE += ${foreach sdir, $(SRC_DIR), ${subst ${sdir}/,,${wildcard $(sdir)/*.c}}}
+SRCFILE += $(COMMON_SRC)
+SRCFILE += $(NETAPP_SRC)
+
+# all object files
+OBJFILE := $(patsubst %.c,$(OBJDIR)/%.o,$(SRCFILE))
+
+#
+# Where to find source files that do not live in this directory.
+#
+VPATH += $(SRC_DIR) $(NETAPP_DIR) $(COMMON_DIR)
+#
+# Where to find header files that do not live in the source directory.
+#
+IPATH += ./
+IPATH += $(CC3200_SDK) $(SDK_INC_DIR) $(COMMON_DIR)
+IPATH += $(NETAPP_INCLUDE)
+
+# Get realpath for flashing, since cc3200prog need to find its dll files
+BINPATH := $(realpath $(BINDIR)/$(PROJECT).bin)
+
+.PHONY: flash clean login debug
+
+#
+# The default rule, which causes the driver library to be built.
+#
+all: ${OBJDIR} ${BINDIR} ${BINDIR}/$(PROJECT).axf
+
+# Flashing bin file
+flash: all
+	cd $(CC3200PROG_DIR); ./$(CC3200PROG) $(CC3200PORT) $(BINPATH)
+	$(SERIALDUMP) -b115200  $(CC3200PORT)
+
+# Log the serial port
+login:
+	# @screen $(CC3200PORT) 115200
+	$(SERIALDUMP) -b115200  $(CC3200PORT)
+
+#
+# debug with gdb
+# need to execute from DB_CONF folder, else it will not success
+#
+debug:
+	cd $(DB_CONF); $(DB) -x gdbinit $(AXFPATH)
+
+#
+# The rule to clean out all the build products.
+#
+clean:
+	@rm -rf ${OBJDIR} ${wildcard *~}
+	@rm -rf ${BINDIR} ${wildcard *~}
+
+
+#
+# register new version
+#
+register:
+	-$(FOTA_CLIENT) --application $(PROJECT) --version $(VERSION) --image $(BINPATH) --config ${FOTA_CONFIGFILE} --profile ${FOTA_PROFILE}
+
+#
+# The rule to create the target directories.
+#
+${OBJDIR}:
+	@mkdir -p ${OBJDIR}
+
+${BINDIR}:
+	@mkdir -p ${BINDIR}
+
+#
+# Rules for building the get_time example.
+#
+${BINDIR}/$(PROJECT).axf: $(OBJFILE) $(SDK_LIBDIR)
+SCATTERgcc_$(PROJECT)=$(PROJECTROOT)/platform/cc3200_dev.ld
+ENTRY_$(PROJECT)=ResetISR
+
+#
+# Include the automatically generated dependency files.
+#
+ifneq (${MAKECMDGOALS},clean)
+-include ${wildcard ${OBJDIR}/*.d} __dummy__
+endif

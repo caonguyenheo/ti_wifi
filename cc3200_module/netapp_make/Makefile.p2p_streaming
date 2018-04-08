@@ -1,0 +1,10 @@
+P2P_STREAMING_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming
+
+P2P_SRC = p2p.c \
+		p2p_packet.c \
+		p2p_main.c
+
+IPATH += $(P2P_STREAMING_ROOT)/inc
+VPATH += $(P2P_STREAMING_ROOT)/src
+
+NETAPP_SRC += $(P2P_SRC)

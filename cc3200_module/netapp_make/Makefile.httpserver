@@ -1,0 +1,24 @@
+#
+# Trinh Van Anh <anh.trinh@nxcomm.com>
+# Jan 2016
+#
+
+HTTPSERVER_ROOT = $(CC3200_SDK)/netapps/http/server
+
+#
+# Objects
+#
+HTTPSERVER_SRCS = base64.c  HttpAuth.c  HttpCore.c  HttpDebug.c  HttpDynamic.c  HttpSocket.c  HttpStatic.c  HttpString.c  sha1.c \
+				strlib.c WebSockHandler.c 
+#
+# Additional Compiler Flags
+#
+CFLAGS += -Dgcc -Dcc3200 -DTARGET_IS_CC3200 -D__SL__
+CFLAGS += -D__OSI__
+CFLAGS += -DSL_PLATFORM_MULTI_THREADED
+CFLAGS += -DUSE_FREERTOS
+
+IPATH += $(CC3200_SDK)/netapps
+VPATH += $(HTTPSERVER_ROOT)
+
+NETAPP_SRC += $(HTTPSERVER_SRCS)

@@ -1,0 +1,10 @@
+obj/
+
+.obj/
+node_modules/
+*.swp
+*.log
+.version
+*.out
+log
+user/ssid_config.h

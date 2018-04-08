@@ -1,0 +1,19 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+# Makefile for MQTT embedded client in C
+#
+
+include $(PROJECTROOT)/netapp_make/Makefile.paho
+
+SERVER_MQTT_C_ROOT ?= $(PROJECTROOT)/apps/paho_client
+
+SERVER_MQTT_C_SOURCES = server_mqtt.c
+
+NETAPP_SRC += $(SERVER_MQTT_C_SOURCES)
+
+SERVER_MQTT_PATH = $(SERVER_MQTT_C_ROOT)
+
+VPATH += $(SERVER_MQTT_PATH)
+IPATH += $(SERVER_MQTT_PATH)

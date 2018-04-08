@@ -1,0 +1,17 @@
+
+NETAPP := mqtt
+NETAPP_INCLUDE += $(NETAPP_ROOT)/$(NETAPP)/include
+NETAPP_INCLUDE += $(NETAPP_ROOT)/$(NETAPP)/platform
+NETAPP_INCLUDE += $(NETAPP_ROOT)/$(NETAPP)/client
+NETAPP_INCLUDE += $(NETAPP_ROOT)/$(NETAPP)/server
+NETAPP_INCLUDE += $(NETAPP_ROOT)/$(NETAPP)/common
+
+NETAPP_DIR_mqtt += $(NETAPP_ROOT)/$(NETAPP)/sl
+NETAPP_DIR_mqtt += $(NETAPP_ROOT)/$(NETAPP)/client 
+NETAPP_DIR_mqtt += $(NETAPP_ROOT)/$(NETAPP)/server
+NETAPP_DIR_mqtt += $(NETAPP_ROOT)/$(NETAPP)/platform
+NETAPP_DIR_mqtt += $(NETAPP_ROOT)/$(NETAPP)/common
+
+NETAPP_DIR += $(NETAPP_DIR_mqtt)
+
+NETAPP_SRC := ${foreach sdir, $(NETAPP_DIR_mqtt), ${subst ${sdir}/,,${wildcard $(sdir)/*.c}}}

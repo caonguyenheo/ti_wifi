@@ -1,0 +1,16 @@
+include $(PROJECTROOT)/netapp_make/Makefile.jsmn
+
+OTA_ROOT ?= $(PROJECTROOT)/apps/ota
+
+OTA_SOURCES = CdnClient.c \
+			  OtaApp.c \
+			  OtaClient.c \
+			  OtaFlash.c \
+			  OtaUtil.c \
+			  OtaHttpClient.c \
+			  flc.c	
+
+IPATH += $(OTA_ROOT)
+VPATH += $(OTA_ROOT)
+
+NETAPP_SRC += $(OTA_SOURCES)

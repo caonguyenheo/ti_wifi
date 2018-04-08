@@ -1,0 +1,11 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+SL_EXTLIB_ROOT = $(CC3200_SDK)/simplelink_extlib
+SL_EXTLIB_INC = $(SL_EXTLIB_ROOT)/flc $(SL_EXTLIB_ROOT)/provisioninglib
+
+IPATH += $(SL_EXTLIB_INC)
+
+#SDK_LIBDIR += $(SL_EXTLIB_ROOT)/gcc/exe/libsimplelink_extlib.a

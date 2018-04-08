@@ -1,0 +1,15 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+SIMPLELINK_ROOT = $(CC3200_SDK)/simplelink
+SIMPLELINK_INCLUDE = $(SIMPLELINK_ROOT)/include
+
+IPATH += $(SIMPLELINK_ROOT) $(SIMPLELINK_INCLUDE)
+
+ifneq "${target}" "NONOS"
+SDK_LIBDIR += $(SIMPLELINK_ROOT)/gcc/exe/libsimplelink.a
+else
+SDK_LIBDIR += $(SIMPLELINK_ROOT)/gcc/exe/libsimplelink_nonos.a
+endif

@@ -1,0 +1,8 @@
+INET_ROOT ?= $(PROJECTROOT)/apps/p2p_streaming/lib/inet
+
+INET_SOURCES = inet_pton.c
+
+IPATH += $(INET_ROOT)
+VPATH += $(INET_ROOT)
+
+NETAPP_SRC += $(INET_SOURCES)

@@ -1,0 +1,957 @@
+
+define global variable (Trung: done)
+	Global variable:
+	char device_mac[13]={0};
+	char uid[31]={0};
+	char p2p_key_char[17]={0};
+	char p2p_rn_char[13]={0};
+	char p2p_key_hex[33]={0};
+	char p2p_rn_hex[25]={0};
+	
+	boolean p2p_ps_ack[200==ACK_NUM]={0};
+	uint32 p2p_ps_start_pid=0;
+	uint32 p2p_ps_start_pid_ind=0;
+	
+	boolean p2p_pr_ack[200==ACK_NUM]={0};
+	uint32 p2p_pr_start_pid=0;
+	uint32 p2p_pr_start_pid_ind=0;
+	
+	boolean p2p_pl_ack[200==ACK_NUM]={0};
+	uint32 p2p_pl_start_pid=0;
+	uint32 p2p_pl_start_pid_ind=0;
+	
+	boolean ps_state=PS_OFF;
+	boolean pr_state=PR_OFF;
+	boolean pl_state=PL_OFF;
+	
+	char ps_ip[20]={0};
+	char pr_ip[20]={0};
+	char pl_ip[20]={0};
+	char my_pr_ip[20]={0};
+	char my_pl_ip[20]={0};
+	uint32 ps_port=20000, pl_port=20000, pr_port=20000, my_pr_port=20000, my_pl_port=20000, ps_ssl_port=443;
+	
+	#define MAX_CMD_BUFLEN 10
+	char mqtt_cmd_key[MAX_CMD_BUFLEN][64]={0};
+	char mqtt_cmd_value[MAX_CMD_BUFLEN][64]={0};
+	
+	uint32 ps_no_ack=10000ms=PS_TIMEOUT
+	uint32 pr_no_ack=7000ms=PR_TIMEOUT
+	uint32 pl_no_ack=7000ms=PL_TIMEOUT
+	
+	int32 ps_socket=-1;
+	int32 pl_socket=-1;
+	int32 pr_socket=-1;
+	
+	RELAY_URL="relay-monitor.cinatic.in"
+	uint64 utc_start=0;
+	int32 ps_last_pid=-1;
+	int32 pr_last_pid=-1;
+	int32 pl_last_pid=-1;
+	
+typedef enum ps_state
+    {
+    PS_OFF = 0,
+    PS_INIT,
+    PS_STREAMING,
+    PS_CLOSING
+    }ps_state;
+    
+typedef enum pr_state
+    {
+    PR_OFF = 0,
+    PR_INIT,
+    PR_STREAMING,
+    PR_CLOSING
+    }pr_state;
+    
+typedef enum pl_state
+    {
+    PL_OFF = 0,
+    PL_INIT,
+    PL_STREAMING,
+    PL_CLOSING
+    }pl_state;
+    
+#define RAW_VIDEO_BLOCK_LENGTH 999
+typedef enum eMediaType
+    {
+    eMediaTypeNull = 0,
+    eMediaTypeVideo,
+    eMediaTypeAudio,
+    eMediaTypeCommand,
+    eMediaTypeFile,                 //No more supported
+    eMediaTypeACK,
+    eMediaTypeTalkback,
+    eMediaTypeUserDefine,
+    }eMediaType;
+
+typedef enum eMediaSubType
+    {
+    eMediaSubTypeNULL               = eMediaTypeNull * 10,
+    eMediaSubTypeVideoIFrame        = eMediaTypeVideo * 10,
+    eMediaSubTypeVideoBFrame,
+    eMediaSubTypeVideoPFrame,
+    eMediaSubTypeVideoJPEG,
+    eMediaSubTypeAudioAlaw          = eMediaTypeAudio * 10,
+    eMediaSubTypeAudioPCM,
+    eMediaSubTypeAudioADPCM,
+    eMediaSubTypeAudioG722,
+    eMediaSubTypeCommandRequest     = eMediaTypeCommand * 10,
+    eMediaSubTypeCommandResponse,
+    eMediaSubTypeCommandOpenStream,
+    eMediaSubTypeCommandStopStream,
+    eMediaSubTypeCommandAccessStream,
+    eMediaSubTypeCommandCloseStream,
+    eMediaSubTypeMediaACK           = eMediaTypeACK * 10,
+    eMediaSubTypeTalkback           = eMediaTypeTalkback * 10,
+    eMediaSubTypeUserDefine         = eMediaTypeUserDefine * 10,
+    }eMediaSubType;
+
+typedef struct {
+      char cmd_name[32];
+      int cmd_id;
+      bool has_agru; //back ward compatible, do not use
+}cmd_table_st;
+enum{
+      eCOMMAND_ID_GET_VERSION = 0,
+      eCOMMAND_ID_GET_MAC ,
+      eCOMMAND_ID_GET_UDID ,
+      eCOMMAND_ID_CHECK_FIRMWARE_UPGRADE ,
+      eCOMMAND_ID_REQUEST_FIRMWARE_UPGRADE ,
+      eCOMMAND_ID_RESTART_SYSTEM,
+      eCOMMAND_ID_GET_RT_LIST,
+      eCOMMAND_ID_SET_SERVER_AUTH,
+      eCOMMAND_ID_SETUP_WIRELESS_SAVE,
+      eCOMMAND_ID_GET_WIFI_CONNECTION_STATE,
+      eCOMMAND_ID_PLAY_LULLABY,
+      eCOMMAND_ID_STOP_LULLABY,
+      eCOMMAND_ID_DELALL_LULLABY,
+      eCOMMAND_ID_VALUE_TEMPERATURE,
+      eCOMMAND_ID_VALUE_HUMIDITY,
+      eCOMMAND_ID_VALUE_NOISE_LEVEL,
+      eCOMMAND_ID_DOWNLOAD_LULLABY,
+      eCOMMAND_ID_LED_SET,
+      eCOMMAND_ID_VALUE_SOUND_PRESSURE,
+      eCOMMAND_ID_VALUE_MIC_START,
+      eCOMMAND_ID_VALUE_MIC_STOP,
+      eCOMMAND_ID_GET_LULLABY_LIST,
+      eCOMMAND_ID_GET_SOC_VER,
+      eCOMMAND_ID_START_TALKBACK,
+      eCOMMAND_ID_STOP_TALKBACK,
+      
+      eCOMMAND_ID_SET_PROJECTOR_STATUS,
+      
+      eCOMMAND_ID_GET_PROJECTOR_SETTING,
+      eCOMMAND_ID_SET_PROJECTOR_SETTING,
+      
+      eCOMMAND_ID_GET_SPK_VOLUME,
+      eCOMMAND_ID_SET_SPK_VOLUME,
+
+      eCOMMAND_ID_SET_DETECTION_SETTING,
+      eCOMMAND_ID_SET_TIMER_SETTING,
+      
+      eCOMMAND_ID_SET_NOISE_TRIGGER,
+      eCOMMAND_ID_GET_NOISE_TRIGGER,
+      
+      eCOMMAND_ID_SET_MAIN_SERVER_URL,
+      eCOMMAND_ID_GET_MAIN_SERVER_URL,
+      
+      eCOMMAND_ID_SET_MQTT_SERVER_URL,
+      eCOMMAND_ID_GET_MQTT_SERVER_URL,
+      
+      eCOMMAND_ID_GET_SESSION_KEY,
+      
+      eCOMMAND_ID_REQUEST_LOG_LOCAL,
+      eCOMMAND_ID_RESET_FACTORY,
+      
+      eCOMMAND_ID_LOCAL_UPGRADE,
+      
+      eCOMMAND_ID_CNT
+}eCOMMAND_ID;
+cmd_table_st cmd_map[eCOMMAND_ID_CNT]= {
+      {"get_version", eCOMMAND_ID_GET_VERSION, FALSE},
+      {"get_mac_address", eCOMMAND_ID_GET_MAC, FALSE},
+      {"get_udid", eCOMMAND_ID_GET_UDID, FALSE},
+      {"check_fw_upgrade", eCOMMAND_ID_CHECK_FIRMWARE_UPGRADE, FALSE},
+      {"request_fw_upgrade", eCOMMAND_ID_REQUEST_FIRMWARE_UPGRADE, FALSE},
+      {"restart_system", eCOMMAND_ID_RESTART_SYSTEM, FALSE},
+      {"get_rt_list", eCOMMAND_ID_GET_RT_LIST, FALSE},
+      {"set_server_auth", eCOMMAND_ID_SET_SERVER_AUTH, TRUE},
+      {"setup_wireless_save", eCOMMAND_ID_SETUP_WIRELESS_SAVE, TRUE},
+      {"get_wifi_connection_state", eCOMMAND_ID_GET_WIFI_CONNECTION_STATE, FALSE},
+      {"lullaby_play", eCOMMAND_ID_PLAY_LULLABY, TRUE},
+      {"lullaby_stop", eCOMMAND_ID_STOP_LULLABY, FALSE},
+      {"lullaby_del_all", eCOMMAND_ID_DELALL_LULLABY, FALSE},
+      {"value_temperature", eCOMMAND_ID_VALUE_TEMPERATURE, FALSE},
+      {"value_humidity", eCOMMAND_ID_VALUE_HUMIDITY, FALSE},
+      {"value_noise_level", eCOMMAND_ID_VALUE_NOISE_LEVEL, FALSE},
+      {"download_lullaby", eCOMMAND_ID_DOWNLOAD_LULLABY, TRUE},
+      {"led_set", eCOMMAND_ID_LED_SET, TRUE},
+      {"value_sound_pressure_level", eCOMMAND_ID_VALUE_SOUND_PRESSURE, FALSE},
+      {"microphone_start", eCOMMAND_ID_VALUE_MIC_START, TRUE},
+      {"microphone_stop", eCOMMAND_ID_VALUE_MIC_STOP, FALSE},
+      {"get_lullaby_list", eCOMMAND_ID_GET_LULLABY_LIST, FALSE},
+      {"get_soc_version", eCOMMAND_ID_GET_SOC_VER, FALSE},
+      {"start_talkback", eCOMMAND_ID_START_TALKBACK, FALSE},
+      {"stop_talkback", eCOMMAND_ID_STOP_TALKBACK, FALSE},
+      
+      {"projector_set", eCOMMAND_ID_SET_PROJECTOR_STATUS, TRUE},
+      {"get_projector_setting", eCOMMAND_ID_GET_PROJECTOR_SETTING, FALSE},
+      {"set_projector_setting", eCOMMAND_ID_SET_PROJECTOR_SETTING, TRUE},
+      
+      {"get_spk_volume", eCOMMAND_ID_GET_SPK_VOLUME, FALSE},
+      {"set_spk_volume", eCOMMAND_ID_SET_SPK_VOLUME, TRUE},
+
+      {"set_detection_setting", eCOMMAND_ID_SET_DETECTION_SETTING, FALSE},
+      {"set_timer_setting", eCOMMAND_ID_SET_TIMER_SETTING, FALSE},
+      
+      {"set_noise_trigger", eCOMMAND_ID_SET_NOISE_TRIGGER, TRUE},
+      {"get_noise_trigger", eCOMMAND_ID_GET_NOISE_TRIGGER, FALSE},
+      
+      {"get_session_key", eCOMMAND_ID_GET_SESSION_KEY, TRUE},
+      
+      {"set_api_url", eCOMMAND_ID_SET_MAIN_SERVER_URL, TRUE},
+      {"get_api_url", eCOMMAND_ID_GET_MAIN_SERVER_URL, FALSE},
+      
+      {"set_mqtt_url", eCOMMAND_ID_SET_MQTT_SERVER_URL, TRUE},
+      {"get_mqtt_url", eCOMMAND_ID_GET_MQTT_SERVER_URL, FALSE},
+      
+      {"local_request_log", eCOMMAND_ID_REQUEST_LOG_LOCAL, TRUE},
+      {"reset_factory", eCOMMAND_ID_RESET_FACTORY, FALSE},
+      
+      {"local_fw_upgrade", eCOMMAND_ID_LOCAL_UPGRADE, TRUE}
+};
+
+int cur_pid=0;
+#define MAX_FRAME_PKT_BUF 10
+char frame_pkt_buf [MAX_FRAME_PKT_BUF][1019];
+int frame_pkt_buf_len [MAX_FRAME_PKT_BUF];
+int frame_pkt_buf_len_total;
+
+basic function
+	config_init(): (Anh)                                     = Done
+		update mac address from device (12char) (device_mac)
+		update uid from config (24 char programable) (uid) (assume hardcode 01234567890123456789ABCD)
+	void random_char(char* input, length): (Anh)            = Done
+		generate random alpha numberical case sensity char array (0-9, a-z, A-Z)
+	void char_to_hex(char* input, char* output, int input_length) (Anh)  = Done
+		Conver char string to hex string: '0' -> "30"
+	p2p_init(): (Anh)(done)
+		random_char(p2p_key_char, 16); = Done
+		random_char(p2p_rn_char, 12); = Done
+		char_to_hex(p2p_key_char, p2p_key_hex, 16) = Done
+		char_to_hex(p2p_rn_char, p2p_rn_hex, 12)	= Done
+		GET rss ip/port (ps_ip, ps_port, ps_ssl_port)                 = Done
+			https://<RELAY_URL>/stream/getip.json?mac=<device_mac>
+			https://relay-monitor.cinatic.in/stream/getip.json?mac=00122A4B3BAF
+		POST register
+			https://<ps_ip>:<ps_ssl_port>/stream/register.json?mac=<device_mac>&rn=<p2p_rn_hex>&key=<p2p_key_hex>&udid=<uid>
+			https://52.7.112.62:446/stream/register.json?mac=00122A4B3BAF&rn=303030303030303030303030&key=30303030303030303030303030303030&udid=01093100122A4B3BAFAXBYWAWQ
+	p2p_ps_close(): (Anh) = Done
+		p2p_ps_ack[200]={0};
+		p2p_ps_start_pid=0;
+		p2p_ps_start_pid_ind=0;
+		ps_state=PS_OFF
+		ps_no_ack=PS_TIMEOUT
+		ps_last_pid = -1
+		if ps_socket>=0{
+			close(ps_socket)
+			ps_socket = -1;
+		}
+	p2p_pl_close(): (Anh)  = Done
+		p2p_pl_ack[200]={0};
+		p2p_pl_start_pid=0;
+		p2p_pl_start_pid_ind=0;
+		pl_ip[20]={0};
+		pl_port=20000;
+		my_pl_ip[20]={0}
+		my_pl_port=20000;
+		pl_state=PL_OFF
+		pl_no_ack=PL_TIMEOUT
+		pl_last_pid = -1
+		if pl_socket>=0{
+			close(pl_socket)
+			pl_socket = -1;
+		}
+	p2p_pr_close(): (Anh)  = Done
+		p2p_pr_ack[200]={0};
+		p2p_pr_start_pid=0;
+		p2p_pr_start_pid_ind=0;
+		pr_ip[20]={0}
+		pr_port=0
+		my_pl_ip[20]={0}
+		my_pl_port=0
+		pr_state=PR_OFF
+		pr_no_ack=PR_TIMEOUT
+		pr_last_pid = -1
+		if pr_socket>=0{
+			close(pr_socket)
+			pr_socket = -1
+		}
+	pid_reset() (Trung)
+		cur_pid=0;
+		
+	mqtt (non-ssl) (Khanh)(done)
+		Get lib from Phuc (optional)
+		
+	utc_timer_init() (Khanh) (done 11jul)       // New task: GetNTPTimeTask
+	uint_32 delta_ms() (Khanh) (done 11jul)     // stopwatch_get_ms()
+	uint_32 utc_second() (Khanh) (done 11jul)   // dt_get_time_s()
+	ms_clock_reset(); (done 11jul)              // stopwatch_stop()+stopwatch_start()
+	system_reset();
+	
+	void aes_sw_encrypt(uint8_t* key, uint8_t* dataIn)(Anh)  === Done
+		Key=2b7e151628aed2a6abf7158809cf4f3c
+		Data=6bc1bee22e409f96e93d7e117393172a
+		Output=3ad77bb40d7a3660a89ecaf32466ef97 (http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors)
+	void aes_sw_decrypt(uint8_t* key, uint8_t* dataIn)(Anh)    === Done
+	uint8_t* aes_sw_encrypt_cbc(uint8_t* key, uint8_t* iv, uint8_t* dataIn, size_t iSize, size_t* oSize)(Anh)    === Done
+		KEY = 4278b840fb44aaa757c1bf04acbe1a3e
+		IV = 57f02a5c5339daeb0a2908a06ac6393f
+		PLAINTEXT = 3c888bbbb1a8eb9f3e9b87acaad986c4
+ 					66e2f7071c83083b8a557971918850e5
+		CIPHERTEXT = 479c89ec14bc98994e62b2c705b5014e
+					175bd7832e7e60a1e92aac568a861eb7
+		(http://csrc.nist.gov/groups/STM/cavp/documents/aes/AESAVS.pdf)
+	uint8_t* aes_sw_decrypt_cbc(uint8_t* key, uint8_t* iv, uint8_t* dataIn, size_t iSize, size_t* oSize)(Anh)     === Done
+
+	frame_2_pid(char *input) (Khanh) DONE
+		Get current pid from current packet
+		input: 'V','L','V','L',0x00,10,,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x00
+		output: 16
+	data_2_mediatype(data) (Khanh) DONE
+		Get media type from current packet
+		input: 'V','L','V','L',0x00,10,,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x00
+		output: 10
+	uint32 ack_2_pid_ack(data) (Khanh)
+		Return PID of ACK packet
+		input: 'V','L','V','L',0x00,50,0x00,0x01,0x02,0x03,336(0x00)
+		output: 66051
+	uint32 command_2_pid(data) (Khanh)
+		Return PID of HTTP command packet
+		input: 'V','L','V','L',0x00,10,0x00,0x01,0x02,0x03,16(0x00)
+		output: 66051
+	char* token_2_value(char* input) (Khanh) (Done) // Parse the value of token: "mode=relay", input "mode", return "relay" 
+	char* command_2_value(char* input) (Khanh) (half-Done) // Convert command string to command code: input "get_session_key", return eCOMMAND_ID_GET_SESSION_KEY
+		command_string_2_token("app_topic_sub=/android-app/paho34727881002438/sub&time=1463054694586&action=command&command=get_session_key&mode=relay&streamname=CC3A61D7DEC6_42627")
+		token_2_value("app_topic_sub")==/android-app/paho34727881002438/sub
+		command_2_value(token_2_value("command"))==eCOMMAND_ID_GET_SESSION_KEY
+	
+	int new_pr_socket(char* my_pr_ip, int* my_pr_port) (Khanh)  Done(13/07/2016)
+		Get stun-whatismyaddress-client-c project from Dinh
+			(ssh://git@bitbucket.cvisionhk.com:22001/bac/stun-whatismyaddress-client-c.git) branch non_os
+	int new_pl_socket(char* my_pl_ip, int* my_pl_port) (Khanh) DONE(14/07/2016)
+		Create new local socket
+	int new ps_socket(ps_ip,&ps_port) (Khanh) DONE
+		Create new socket to relay server
+		ps_ip,ps_port are input
+	PS_open(l_ps_socket) (Trung)(done)
+		Send open packet to PS server
+	PR_open(l_pr_socket) (Anh) = Done
+		Send VLVL random packet to PR client (2x(0x00+0x00+100 bytes, 0x00+0x00+500 bytes, 0x00+0x00+1000 bytes)) seperated by 10ms
+		Example:
+			VLVL,0x00,0x00,{0,1.....,99}
+			sleep(10ms)
+			VLVL,0x00,0x00,{0,1.....,249,0,1,...249}
+			sleep(10ms)
+			VLVL,0x00,0x00,{0,1.....,249,0,1,...249,0,1.....,249,0,1,...249}
+			sleep(10ms)
+			......
+	set_udp_non_blocking(int socket) //Khanh
+		Set udp socket to non-blocking
+//Khanh DONE
+typedef enum command_type
+    {
+    P2P_COMMAND = 0,
+    MQTT_COMMAND
+    }command_type;
+  
+// Convert command string to token
+// mqtt_cmd_key[MAX_CMD_BUFLEN][64]={0};
+// mqtt_cmd_value[MAX_CMD_BUFLEN][64]={0};
+int command_string_2_token(l_command_ptr,l_len){// Khanh DONE
+}
+void command_handler(char* input, int length, command_type commandtype, char* response, int* response_len){ //Khanh DONE
+	char* l_command_ptr;
+	int l_len;
+	char l_response[1500];
+	int l_response_len=0;
+	if ((commandtype==MQTT_COMMAND)&&(input[0]=='2'))
+		l_command_ptr=input+1;
+		l_len = length-1;
+	else if (commandtype==P2P_COMMAND)
+		l_command_ptr=input;
+		l_len = length;
+	else
+		*response_len=-1;
+		return;
+		
+	if (command_string_2_token(l_command_ptr,l_len)!=0)
+		*response_len=-1;
+		return;
+		
+	switch command_2_value(token_2_value("command")) 
+		case eCOMMAND_ID_GET_SESSION_KEY:
+			if (token_2_value("mode")=="relay") //ex: "app_topic_sub=/android-app/paho34727881002438/sub&time=1463054694586&action=command&command=get_session_key&mode=relay&streamname=CC3A61D7DEC6_42627"
+				if ps_state=PS_OFF
+					ps_state=PS_INIT;
+					ps_socket=new ps_socket(ps_ip,&ps_port)
+					PS_open(ps_socket)
+					set_udp_non_blocking(ps_socket)
+					ps_no_ack=0;
+				l_response/l_response_len="get_session_key: error=200,key=<p2p_key_hex>&sip=<ps_ip>&sp=<ps_port>&rn=<p2p_rn_hex>"
+			if (token_2_value("mode")=="remote") //ex: "app_topic_sub=/android-app/paho34727881002438/sub&time=1463054694586&action=command&command=get_session_key&mode=remote&port1=42627&ip=115.79.62.15&streamname=CC3A61D7DEC6_42627"
+				if (pr_state==PR_OFF)
+					pr_state=PR_INIT;
+					pr_socket=new_pr_socket(my_pr_ip, &my_pr_port)
+					l_response/l_response_len="get_session_key: error=200,port1=<my_pr_port>&ip=<my_pr_ip>&key=<p2p_key_hex>&rn=<p2p_rn_hex>"
+					pr_ip=<ip>
+					pr_port=<port1>
+					PR_open(pr_socket)
+					set_udp_non_blocking(pr_socket)
+					pr_no_ack=0;
+				else
+					l_response/l_response_len=,"get_session_key: error=-2"
+			if (token_2_value("mode")=="combine") //ex: "app_topic_sub=/android-app/paho34727881002438/sub&time=1463054694586&action=command&command=get_session_key&mode=combine&port1=42627&ip=115.79.62.15&streamname=CC3A61D7DEC6_42627"
+				if ps_state=PS_OFF
+					ps_state=PS_INIT;
+					ps_socket=new ps_socket(ps_ip,&ps_port)
+					PS_open(ps_socket)
+					set_udp_non_blocking(ps_socket)
+					ps_no_ack=0;
+				if (pr_state=PR_OFF)
+					pr_state=PR_INIT;
+					pr_socket=new_pr_socket(my_pr_ip, &my_pr_port)
+					l_response/l_response_len="get_session_key: error=200,port1=<my_pr_port>&ip=<my_pr_ip>&key=<p2p_key_hex>&sip=<ps_ip>&sp=<ps_port>&rn=<p2p_rn_hex>"
+					pr_ip=<ip>
+					pr_port=<port1>
+					PR_open(pr_socket)
+					set_udp_non_blocking(pr_socket)
+					pr_no_ack=0;
+				else
+					l_response/l_response_len="get_session_key: error=200,key=<p2p_key_hex>&sip=<ps_ip>&sp=<ps_port>&rn=<p2p_rn_hex>"
+			if (token_2_value("mode")=="local") //ex: "app_topic_sub=/android-app/paho34727881002438/sub&time=1463054694586&action=command&command=get_session_key&mode=local&port1=42627&ip=115.79.62.15&streamname=CC3A61D7DEC6_42627"
+				if ps_state=PL_OFF
+					pl_state=PL_INIT;
+					pl_socket=new_pl_socket(my_pl_ip, &my_pl_port)
+					l_response/l_response_len="get_session_key: error=200,port1=<my_pl_port>&ip=<my_pl_ip>&key=<p2p_key_hex>&rn=<p2p_rn_hex>"
+					pl_ip=<ip>
+					pl_port=<port1>
+					pl_no_ack=0;
+					set_udp_non_blocking(pl_socket)
+				else
+					l_response/l_response_len="get_session_key: error=-2"
+			break;
+		default:
+			l_response/l_response_len="<token_2_value("command")>: -1"
+			break;
+	endswitch
+
+	if (commandtype==MQTT_COMMAND)
+		mqtt_send(token_2_value("app_topic_sub"),'3'+"id: <device_mac>&time: token_2_value("time")&"+l_response/l_response_len)
+	else
+		memcpy(response,l_response,l_response_len);
+		*response_len = l_response_len;
+	mqtt_cmd_key[MAX_CMD_BUFLEN][64]={0};
+	mqtt_cmd_value[MAX_CMD_BUFLEN][64]={0};
+}
+
+
+p2p_main() (Trung: done)
+	config_init()
+	p2p_init()
+	utc_timer_init()
+	newthread(mqtt)
+	newthread(frame_simulator)
+	
+	while(1){
+		{	// Process PS request
+			if (ps_state==PS_INIT){
+				ps_state=PS_STREAMING
+			}
+			if (ps_state==PS_STREAMING)
+				if (ps_no_ack>=PS_TIMEOUT)
+					ps_state = PS_CLOSING
+					ps_no_ack=PS_TIMEOUT
+			if (ps_state = PS_CLOSING)
+				p2p_ps_close()
+				ps_state=PS_OFF
+		}
+		{	// Process pr request
+			if (pr_state==PR_INIT){
+				pr_state=PR_STREAMING
+			}
+			if (pr_state==PR_STREAMING)
+				if (pr_no_ack>=PR_TIMEOUT)
+					pr_state = PR_CLOSING
+					pr_no_ack=PR_TIMEOUT
+			if (pr_state==PR_CLOSING)
+				p2p_pr_close()
+				pr_state=PR_OFF
+		}
+		{	// Process pl request
+			if (pl_state==PL_INIT){
+				pl_state=PL_STREAMING
+			}
+			if (pl_state==PL_STREAMING)
+				if (pl_no_ack>=PL_TIMEOUT)
+					pl_state = PL_CLOSING
+					pl_no_ack=PL_TIMEOUT
+			if (pl_state == PL_CLOSING)
+				p2p_pl_close()
+				pl_state=PL_OFF
+		}
+		if (ps_state==PS_OFF && pr_state==PR_OFF && pl_state==PL_OFF)
+			ms_clock_reset();
+			pid_reset();
+		
+		rev_process()
+		
+		sleep(50ms)
+	}
+		
+packet_process(char *input, int length) (Khanh) DONE
+	uint32 l_pid=frame_2_pid(input);
+	if (ps_state==PS_STREAMING)
+		stream_process(ps_socket,ps_ip,ps_port,l_pid,&p2p_ps_start_pid,&p2p_ps_start_pid_ind,p2p_ps_ack,input,length)
+	if (pl_state==PL_STREAMING)
+		stream_process(pl_socket,pl_ip,pl_port,l_pid,&p2p_pl_start_pid,&p2p_pl_start_pid_ind,p2p_pl_ack,input,length)
+	if (pr_state==PR_STREAMING)
+		stream_process(pr_socket,pr_ip,pr_port,l_pid,&p2p_pr_start_pid,&p2p_pr_start_pid_ind,p2p_pr_ack,input,length)
+
+stream_process(int ps_socket, char* ps_ip, int ps_port, uint32 l_pid, uint32* p2p_ps_start_pid, uint32* p2p_ps_start_pid_ind, bool* p2p_ps_ack, char *input, int length)(Khanh) DONE
+	int extra_length;
+	int i;
+	if (l_pid<*p2p_ps_start_pid)
+	else if (l_pid<=*p2p_ps_start_pid+ACK_NUM-1)
+		l_pid_ind = (l_pid-*p2p_ps_start_pid+*p2p_ps_start_pid_ind)%ACK_NUM;
+		if (p2p_ps_ack[l_pid_ind]==false)
+			sendto(ps_socket,ps_ip,ps_port,input,length)
+	else
+		extra_length = l_pid-(*p2p_ps_start_pid+ACK_NUM-1)
+		sendto(ps_socket,ps_ip,ps_port,input,length)
+		if extra_length<ACK_NUM
+			for(i=0:extra_length-1)
+				p2p_ps_ack[(*p2p_ps_start_pid_ind+i)%ACK_NUM]=0;
+			*p2p_ps_start_pid_ind=(*p2p_ps_start_pid_ind+extra_length)%ACK_NUM
+			*p2p_ps_start_pid+=extra_length
+		else
+			p2p_ps_ack[200]={0};
+			*p2p_ps_start_pid=l_pid;
+			*p2p_ps_start_pid_ind=0;
+
+rev_process()(Anh)   = DONE
+	if (ps_state==PS_STREAMING)
+		rev_process_one(ps_socket, ps_ip, ps_port, &p2p_ps_start_pid, &p2p_ps_start_pid_ind, p2p_ps_ack, &ps_no_ack, &ps_last_pid)
+	if (pl_state==PL_STREAMING)
+		rev_process_one(pl_socket, pl_ip, pl_port, &p2p_pl_start_pid, &p2p_pl_start_pid_ind, p2p_pl_ack, &pl_no_ack, &pl_last_pid)
+	if (pr_state==PR_STREAMING)
+		rev_process_one(pr_socket, pr_ip, pr_port, &p2p_pr_start_pid, &p2p_pr_start_pid_ind, p2p_pr_ack, &pr_no_ack, &pr_last_pid)
+
+rev_process_one(int ps_socket, char* ps_ip, int ps_port, uint32* p2p_ps_start_pid, uint32* p2p_ps_start_pid_ind, bool* p2p_ps_ack, int* ps_no_ack, int* last_cmd_pid){//(Anh) = DONE
+	char data[1500]={0}, response[1500];
+	uint32 l_pid;
+	int length, temp, response_len;
+	char iv[16]={0};
+	length=revcfrom(ps_socket,data,1500,NON_BLOCKING)
+	char *temp_ptr;
+	size_t oSize;
+	if (length>=10)
+		media_type=data_2_mediatype(data);
+		if (media_type/10==eMediaTypeACK)&&(length>10)
+			l_pid=ack_2_pid_ack(data);
+			for(i=0;i<(length-10);i++)
+				if (l_pid<*p2p_ps_start_pid)
+				else if (l_pid<=*p2p_ps_start_pid+ACK_NUM-1)
+					l_pid_ind = (l_pid-*p2p_ps_start_pid+*p2p_ps_start_pid_ind)%ACK_NUM;
+					if (data[10+i])
+						p2p_ps_ack[l_pid_ind]==true
+				l_pid++;
+		else if (media_type/10==eMediaTypeTalkback)
+		else if (media_type/10==eMediaTypeCommand)
+			if (length>=10+16)
+				l_pid=command_2_pid(data);
+				if (((int32)l_pid)>*last_cmd_pid){
+					temp_ptr = aes_sw_decrypt_cbc(p2p_key_char, iv, data+10, ((datalen-10)/16)*16, &oSize);
+					command_handler(temp_ptr,oSize,P2P_COMMAND,response+12,&response_len);
+					if (response_len>0)
+						memcpy(response,data,10);
+						response[5]=eMediaSubTypeCommandResponse;
+						temp = (response_len/16)*16;
+						if (temp!=response_len)
+							temp+=16;
+						response[10]=(temp>>8)&0xFF;
+						response[11]=temp&0xFF;
+						temp_ptr = aes_sw_encrypt_cbc(p2p_key_char, iv, response+12, temp, &oSize);
+						memcpy(response+12,temp_ptr,oSize);
+						temp+=12; //After header
+						sendto(ps_socket, ps_ip, ps_port, response,temp)
+					*last_cmd_pid = l_pid;
+				} 
+			endif
+		*ps_no_ack = 0;
+	else
+		*ps_no_ack++
+}
+
+
+
+
+
+
+==================================
+Sensor board section
+If used in simulator in CC3200, can call directly packet_process()
+If used in in mother board, packet_process() can be replaced by spi_send
+    On the receiving side, packet_process() can be call for every received packet
+==================================
+(Anh)
+frame_process(char* input, int length, char mediatype){   = DONE
+	int i;
+	uint32 block_num=0;
+	char packet[1500]={0};
+	int32 enc_pos=0;
+	
+	i=0;
+	while(length-i>=16)
+		aes_sw_encrypt(p2p_key_char, input+enc_pos);
+		i+=1024+16;
+		
+	block_num = (length/RAW_VIDEO_BLOCK_LENGTH);
+	if (blocknum*RAW_VIDEO_BLOCK_LENGTH!=length)
+		block_num++;
+	timestamp_ms = delta_ms();
+	packet[0]='V';
+	packet[1]='L';
+	packet[2]='V';
+	packet[3]='L';
+	packet[5]=mediatype;
+	packet[6]=timestamp_ms >>24;
+	packet[7]=(timestamp_ms >>16)&0xFF;
+	packet[8]=(timestamp_ms >>8)&0xFF;
+	packet[9]=timestamp_ms&0xFF;
+	packet[10]=block_num>>8;
+	packet[11]=block_num&0xFF;
+	packet[12]=(cur_pid>>24);
+	packet[13]=(cur_pid>>16)&0xFF;
+	packet[14]=(cur_pid>>8)&0xFF;
+	packet[15]=cur_pid&0xFF;
+		
+	//Cheat only, To be improved
+	for(i=0;i<frame_buf_len_total;i++)
+		packet_process(frame_pkt_buf[i][],frame_pkt_buf_len[i]);
+	frame_buf_len_total = 0;
+	
+	i=0;
+	while(1){
+		packet[16]=((cur_pid+i)>>24);
+		packet[17]=((cur_pid+i)>>16)&0xFF;
+		packet[18]=((cur_pid+i)>>8)&0xFF;
+		packet[19]=(cur_pid+i)&0xFF;
+		if (length>=RAW_VIDEO_BLOCK_LENGTH)
+			memcpy(packet+20,input,RAW_VIDEO_BLOCK_LENGTH)
+			if (i<MAX_FRAME_PKT_BUF)
+				memcpy(frame_pkt_buf[i][],packet,20+RAW_VIDEO_BLOCK_LENGTH)
+				frame_pkt_buf_len[i]=20+RAW_VIDEO_BLOCK_LENGTH;
+				frame_buf_len_total++;
+			
+			packet_process(packet,20+RAW_VIDEO_BLOCK_LENGTH);
+			input+=RAW_VIDEO_BLOCK_LENGTH;
+			length-=RAW_VIDEO_BLOCK_LENGTH;
+			i++;
+		else
+			if length==0
+				break;
+			memcpy(packet+20,input,length)
+			if (i<MAX_FRAME_PKT_BUF)
+				memcpy(frame_pkt_buf[i][],packet,20+length)
+				frame_pkt_buf_len[i]=20+length;
+				frame_buf_len_total++;
+			packet_process(packet,20+length);
+			break;
+	}
+
+(Trung done)
+#define MAX_LENGTH_SIM 8
+void frame_simulator(void){
+	int i;
+	while(1){
+		if (i==0)
+			frame_process(framex[i], framelen[i], eMediaSubTypeVideoIFrame);
+		else
+			frame_process(framex[i], framelen[i], eMediaSubTypeVideoPFrame);
+		i=(i+1)%MAX_LENGTH_SIM;
+		sleep(60ms)
+	}
+}
+
+/////////////////////////
+Issue
+/////////////////////////
+Command no PID duplication (Trung) (done)
+Set PID command to -1 upon closing (trung) (done)
+set PID media to 0 upon closing (trung) (done)
+check Correct resend (Khanh)
+No Wifi recovery/reboot (Trung) (done)
+	[WLAN EVENT] STA Connected to the AP: Nxcomm_Dev , BSSID: 44:d9:e7:f7:b7:90
+	Host Driver Version: 1.0.0.10
+	Build Version 2.0.7.0.31.0.0.4.1.1.5.3.3
+	[WLAN EVENT] Device disconnected from the AP: Nxcomm_Dev, BSSID: 44:d9:e7:f7:b7:90 on application's request
+	Error [-6] at line [736] in function [ConfigureSimpleLinkToDefaultState]
+MQTT recovery upon disconnect (Khanh)
+No NTP recovery (Khanh)
+NTP wrong time (Khanh)
+add binding for PR (Trung)(to test)
+handle "cannot binding socket" (PS, PR, PL), for each mode:
+	if can't bind, port++, fail_to_bind++;
+	if can bind, fail_to_bind=0
+	if (fail_to_bind==5)
+		reboot
+Drop double send in cc3200 & implement 2 frames send spaced by 350ms
+Build library
+	No need for cc3200 code
+	non_os_p2p_spi_novoton.lib
+	non_os_p2p_sender_linux.lib (replicate of cc3200 code on linux machine)
+Sleep mode:
+	3200 sleep/wakeup from TCP request
+Nuvoton finetune
+	SPI optimized clock?
+	12frame/sec
+	Audio/video smoothness
+P2P File (only 1 connection, the request will terminate live stream, has higher priviledge than live stream)
+	File receiver: request: command=get_file&mode=<local|remote|relay>&port1=<>&ip=<>&filename=<filename>
+	File sender return:
+	File sender: Send un-ack 20 packages every 250ms
+				close if no more pkgs to send
+				close if timeout 10s
+	File receiver:
+		Resever full buffer in RAM
+		Send ack packet with PID = largest PID not yet receiving
+		Close if rev all
+		Close if timeout 10s
+Set UDP punching packet
+	TTL=4 (hops)
+Set UDP Type of Service
+	TOS=0x14
+OTA md5 (trung)
+OTA dev/udid (trung)
+OTA test (trung)
+	user (5 times)
+	dev (5 times)
+	OTA 4 steps
+	OTA first step power off (3 times)
+	OTA second step power off (3 times)
+	
+/////////////////////////
+SPI (Khanh)
+/////////////////////////
+Format: Each SPI packet has 1024 bytes.
+        nameX->X number of bytes. Example: Flicker1 is 1 byte flicker.
+        Value in big endien eg BitRate2=Byte[0]<<8 or Byte[1]
+        Last 2 bytes (Byte Index 1022 & 1023) is checksum (addition)
+        
+Length: 1024
+Master->Slave                              Slave->Master                                      From      Description
+"0x01"                                     "0x81<version>"                                    Master    Get version
+"0x02"                                     "0x82<udid>"                                       Master    Get UDID
+"0x03<Len2><data>"                                                                            Master    Send a media packet, example 0x03+1019<0..1018>
+"0x04"                                     "0x84<0:factory reset>"                            Master    Get status
+                                                <1:not-ready>
+                                                <2:ready>
+                                                <3:streaming>
+"0x05"                                     "0x85<len2><data>                                  Master    Get a media packet, example 0x05+1019<0..1018>
+"0x06" "0xF7" "0xF8" "0xF9"                "0x06" "0xF7" "0xF8" "0xF9"                        Both      IOT reset
+"0x07" to "0xA"															                      Mixed     IP over SPI protocol
+"0xB<end_flag><packet_seq><packet_index><command_seq><command_id><command_body>"	          Master    Send request (master -> slave)
+"0xC<end_flag><packet_seq><packet_index><command_seq><command_id><command_body>"	          Master    Response (slave -> master)
+                                           "0xD<Len2><PID4><ACK336>                           Slave     Audio/Video ACK from CC3200
+"0xE"<|1 byte flicker                      "0x8E"<|1 byte flicker                             Slave     Set Camera Setting (Get: 0x01, Set: 0x02)
+      |1 byte flip updown                         |1 byte flip updown      
+      |1 byte flip leftright                      |1 byte flip leftright   
+      |2 bytes bitrate                            |2 bytes bitrate         
+      |1 byte frame rate                          |1 byte frame rate       
+      |2 byte resolutions                         |2 byte resolutions      
+      |NA                                         |1 NA                    
+      |1 byte speaker volume                      |1 byte speaker volume   
+      |1 byte microphone volume                   |1 byte microphone volume
+      |1 byte GOP>                                |1 byte GOP>             
+      |1 byte duplex                              |1 byte duplex                                        Enable 0xF1, disable 0xF2, other un-changed
+      |1 byte adaptive                            |1 byte adaptive                                      Enable auto 0x1, other off auto
+ 
+"0xF"<Flip_UpDown1><Flip_TopBot1>          "0x8F"<Get/Set1><Flip_UpDown1><Flip_TopBot1>       Slave     Set Image Flip (Get: 0x01, Set: 0x02)
+"0x10"<BitRate2>                           "0x90"<Get/Set1><BitRate2>                         Slave     Set Bit Rate in kbps (Get: 0x01, Set: 0x02)
+"0x11"<FrameRate1>                         "0x91"<Get/Set1><FrameRate1>                       Slave     Set Frame Rate (Get: 0x01, Set: 0x02)
+"0x12"<Resolution2>                        "0x92"<Get/Set1><Resolution2>                      Slave     Set Resolution (Get: 0x01, Set: 0x02)
+"0x13"<Len1><AesKey><Len1><rnd><len1><sip><len1><sp>                       
+                                           "0x93"<Get/Set1><Len1><AesKey><Len1><rnd><len1><sip><len1><sp>                     
+                                                                                              Slave     Set AES Key/RND/SIP/SP (16 bytes) (Get: 0x01, Set: 0x02) (Key/RND in string form, not hex form, SPI/SP also string)
+"0x14"<CDS_mV2>                            "0x94"<Get/Set1><CDS_mV2>                          Slave     Set CDS in mV (Get: 0x01, Set: 0x02)
+"0x15"                                                                                        Mixed     AK upgrade protocol
+"0x16"                                                                                        Mixed     Motion upload protocol
+                                           "0x97"<Get/Set1><NTP4>                             Slave     Set NTP (Get: 0x01, Set: 0x02)
+"0x18"<Version6>                           "0x98"<Get>                                        Slave     Get AK version (Get: 0x01)
+                                           "0x99"<Option1>                                    Slave     Playdingdong/Uploadsnapshot
+                                                 <Option1=0xA0><len2><MotionEventInfo>                  If Option1=0xA0->don't play dingdong, upload snapshot info
+                                                                                                        If Option1=0x00->play dingdong only
+                                                                                                        Otherwise: NA
+"0x1A"<Len1><UDID>                         "0x9A"<Get/Set1><Len1><UDID>                       Slave     Set UDID (16 bytes) (Get: 0x01, Set: 0x02)
+"0x1B"<Len1><Device_Token>                 "0x9B"<Get/Set1><Len1><Device_Token>               Slave     Set Device_Token (Get: 0x01, Set: 0x02)
+"0x1C"<Len1><Device_Token>                 "0x9C"<Get/Set1><Len1><Upload_URL>                 Slave     Set upload URL (Get: 0x01, Set: 0x02)
+                                           "0x1D<Len2><PID4><ACK336>                          Slave     File ACK from CC3200
+"0x1E"                                                                                        Mixed     File transfer protocol
+                                           "0x9F"<VoiceNum1>                                  Slave     Play voice prompt 
+                                                                                                        VoiceNum:
+                                                                                                        	0x0?: common
+                                                                                                        		0x01:beep
+                                                                                                        		0x02:jingle
+                                                                                                        	0x1?: English
+                                                                                                        	0x2?: Chinese
+                                                                                                        	0x?1: setupfail
+                                                                                                        	0x?2: setupsuccess
+                                                                                                        	0x?3: setuptimeout
+                                                                                                        	0x?4: "Sorry. Not available to meet now."->update
+                                                                                                        	0x?5: "You can leave it. Thanks !"->same
+                                                                                                        	0x?6: "Welcome ! Coming over now."->Same
+                                                                                                        	0x?7: "How can I help ?"(obsolete)
+                                                                                                        	0x?8: "Sorry. Not at home now."(obsolete)
+                                                                                                        	0x?9: "Who are you looking for?" (new)
+                                                                                                            (play_prompt&value=<value>)
+"0x20"                                                                                        Master    Do not cut off power (AK is saving image for example)
+"0x21"<SpeakerVol1><MicVol1><Echo><NoiseRed>                                                  Master
+                                           "0xA1"<Get/Set1><SpeakerVol1><MicVol1><Echo><NoiseRed>
+                                                                                              Slave    Set speaker and microphone volume (0->12), EchoCancellation/NoiseReduction On(1)/off(0)
+                                                                                                       (mqtt command "set/get_spkmic_volume&spkvol=<value>&micvol=<value>")
+"0x22"                                                                                        Master    PU Stream: mjpeg
+"0x23"                                                                                        Master    PU Stream: audio
+"0x24"                                     "0xA4"                                             Mixed     Factory command
+IP over SPI (IOS): 0x07-0x10
+[Transport Type: 1byte] [Transport ID: 1byte] [Transport Control: 1byte] [Transport Error Code: 1byte] [Transport Direction: 1byte]: [Data Length: 2 bytes] [Fragment Flag: 1byte] [Reserved: 1byte] [Transport Data: max 1015 bytes]
+[Transport Type: 1byte] : 0x07:TCP, 0x08:UDP, 0x09:Ping, 0x0A:Get response (use for polling get response)
+[[Transport ID: 1byte]]: Socket or Session ID
+[Transport Control: 1byte]: 0x00: open, 0x01: close, 0x02: send, 0x03: receive
+[Transport Error Code: 1byte]: >=0: no error, -1: some thing fail
+[Transport Direction: 1byte]: 0: Host -> Wifi Module, 1: Wifi Module ->  Host
+[Data Length: 2 bytes]: Actual Length of [Transport Data]
+[Fragment Flag: 1byte]: 0: not the last fragment packet, 1: the last fragment packet
+[Reserved: 1byte]: In some special case of future
+[Transport Data: max 1013 bytes]: The real transport data
+Socket Open FLow:
+	- Host send "TCP/UDP open" with Transport type: 0x07/0x08, Transport control: 0x00, Data Length: The Transport Data's length, Transport data: [host]:[port], e.g. testing.com:8080.
+	- WIFI module tries to create the TCP/UDP session corresponding with Host's sending data.
+	- WIFI module sends the response with Transport type: 0x07/0x08, Transport ID: The socket id of session, -1 if fail to open, Transport control: 0x00, Transport error code: 0 or -1, Data Length: The Transport Data's length, Transport data: [host]:[port], e.g. testing.com:8080 (must contain this field if the socket open successfully)
+Socket Send Flow:
+	- Host send "TCP/UDP send" with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x02, Data Length: the length of transport data, Fragment Flag: is the last fragment of transport data (if not 1, WIFI module need to continue to receive SPI data until this value is 1), Transport data: The real data need to send
+	- WIFI module tries to handle the send request.
+	- WIFI module sends the response with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x02, Transport error code: length of actual sent data or -1 if fail.
+Socket Receive Flow:
+	- Host send "TCP/UDP receive" with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x03, Data Length: the data length need to receive
+	- WIFI module tries to handle the receive request.
+	- WIFI module sends the response with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x03, Transport error code: length of actual received data or -1 if fail, Data Length: The Transport Data's length, Fragment Flag: is the last fragment of transport data (if not 1, Host need to continue to receive SPI data until this value is 1), Transport Data: the received data.
+Socket Close Flow:
+	- Host send "TCP/UDP close" with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x01.
+	- WIFI module tries to close the TCP/UDP session corresponding with Host's sending data.
+	- WIFI module sends the response with Transport type: 0x07/0x08, Transport ID: The socket id of session, Transport control: 0x01, Transport error code: 0 or -1.
+Ping flow:
+	- Host send "TCP/UDP ping" with Transport type: 0x09, Data Length: The Transport Data's length, Transport data: [host]:[port], e.g. testing.com:8080.
+	- WIFI module tries to handle the request.
+	- WIFI module sends the response with Transport type: 0x09, Transport error code: 0 or -1, Data Length: The Transport Data's length, Transport data: Ping data response
+NOTE: 
+	- There is one extra GPIO that is used for WIFI module to notify the incoming data to Host, so that Host can start the SPI session to get back the response of previous request.
+	- Currently, for testing only, Host will polling to get the response with Transport Type: 0x10
+ 
+SPI clock = bit_rate*2*1.5=800kbps*3=2.4Mbps
+//Trung (done)
+/////////////////////////
+2 Iframe
+/////////////////////////
+
+char* framex[2]={frame1,frame2};
+int framelen[2]={sizeof(frame1),sizeof(frame2)};
+
+
+
+char ram_buf_frame[sizeof(frame1)>sizeof(frame2)?sizeof(frame1):sizeof(frame2)];
+void frame_simulator(void *pvParameters){
+	int i=0;
+	
+	
+	while(1){
+		memcpy(ram_buf_frame,framex[i],framelen[i]);
+		if (i==0)
+			frame_process(ram_buf_frame, framelen[i], eMediaSubTypeVideoIFrame);
+		else{
+			frame_process(ram_buf_frame, framelen[i], eMediaSubTypeVideoPFrame);
+			frame_process(ram_buf_frame, 2048, eMediaSubTypeAudioAlaw);
+		}
+		i=(i+1)%MAX_LENGTH_SIM;
+		osi_Sleep(1000);
+	}
+}
+
+unsigned char frame1[] =
+{
+};
+    
+unsigned char frame2[] = {
+};
+
+
+AK upgrade: 0x95
+<CONTROL1><LEN2><BIN_LEN4><POSITION4><data>...<checksum2>
+<CONTROL1>:
+	- 0x01: slave to mater: upgrading
+	- 0x02: master to slave: <CONTROL1><POSITION4>...<checksum2>
+	- 0x03: master to slave: upgrading done
+	- 0x04: mix direction: stop upgrading
+	- 0x05: <CONTROL1><LEN2><TYPE1><hash_string>...<checksum2>
+	    - TYPE1: 0x01->md5
+	    - LEN2=len(<TYPE><hash_string>)
+<LEN2>: len(BIN_LEN4)+len(POSITION4)+len(data)
+
+Motion upload protocol: 0x16
+[CONTROL1]:
+	- 0x01: master to slave: start socket
+	    - <LEN2><SSL1><PORT2><URL>...<checksum2>
+	        - LEN2=len(<SSL1><PORT2><URL>)
+	        - SSL: 0->HTTP, 1->HTTPS
+	- 0x02: slave to master: socket ready
+	- 0x03: master to slave: uploading
+		- <LEN2><POSITION4><data>...<checksum2>
+	        - LEN2=len(<POSITION4><data>)
+	        - len(data)=0 ->uploading done
+    - 0x04: slave to/from master: data error-resume
+		- <POSITION4>
+	- 0x06: slave to master: response
+		- <LEN2><POSITION4><data>...<checksum2>
+	        - LEN2=len(<POSITION4><data>)
+	        - len(data)=0 -> response completed
+	- 0x07: master to slave: socket close
+ 
+File data AK->CC: 0x03 (media type is 41)
+File ACK CC->AK: 0x0D (media type is 51)
+	- <Len2><PID4><ACK336>
+File upload protocol: 0x1E
+[CONTROL1]:
+	- 0x01: slave to master: select file
+	   - <LEN2><Filename>
+	- 0x02: master to slave: file valid
+	   - OK(0x01)/NOK(otherwise)
+	- 0x03: slave to master: file transfer start
+	- 0x04: master to slave: transfer done (== file transfer stop) (resume streaming)
+	- 0x05: slave to master: file transfer stop (resume streaming)
+
+	
+24/A4 <AK light:1> <tonegen:3 [on:1][freq:2]> <get bitrate:2>
+1       2                   3  4     5         6    7
+This command is hard format with 7 bytes
+Command: 0xA4
+	- Byte 2: AK light: turn on 0x01, turn off 0x02
+	- Byte 3-4-5: Tone gen: contain 3 bytes, the first byte is on/off tonegen
+		The last 2 byte: frequence 1000Hz, 2000Hz or 3000Hz
+	- Byte 6-7: Bitrate 2byte: get actually bitrate H264 (kbps)
+	- Byte 8: loopback on/off
+Which bytes dont use for other command, set them 0x00	
+0x00: keep actually state
+0x01: set
+0x02: off                              

@@ -1,0 +1,11 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Oct 2015
+#
+
+DRIVERLIB_ROOT = $(CC3200_SDK)/driverlib
+DRIVERLIB_INCLUDE = $(DRIVERLIB_ROOT)
+
+IPATH += $(DRIVERLIB_INCLUDE)
+
+SDK_LIBDIR += $(DRIVERLIB_ROOT)/gcc/exe/libdriver.a

@@ -1,0 +1,18 @@
+#
+# Nguyen Quoc Dinh <dinh.nguyen@nxcomm.com>
+# Nov 2015
+#
+
+#include $(PROJECTROOT)/netapp_make/Makefile.httpclient_nonos
+include $(PROJECTROOT)/netapp_make/Makefile.httpclient_os
+
+API_ROOT ?= $(PROJECTROOT)/apps/serverapi
+
+API_SOURCES = server_api.c \
+					 server_http_client.c \
+					 server_util.c
+
+NETAPP_SRC += $(API_SOURCES)
+
+VPATH += $(API_ROOT)
+IPATH += $(API_ROOT)
